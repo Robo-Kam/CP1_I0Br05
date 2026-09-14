@@ -1,4 +1,5 @@
 from Robot import robot
+import A_Star_basic
 
 
 class Grid:
@@ -25,7 +26,6 @@ class Grid:
         # initialize positions dictionary
         for i in range(num_robots):
             self.positions[i] = self.robots[i].position
-
         
 
         self.timestamps[0] = self.positions # add the current positions to the first timestamp
