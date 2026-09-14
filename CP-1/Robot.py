@@ -1,8 +1,5 @@
 import numpy as np
 import random
-from Drone import Drone
-from Humanoid import Humanoid
-from Driver import Driver
 
 # Robot class
     # roboType Drone subclass, Humanoid subclass, Driver subclass
@@ -10,7 +7,7 @@ from Driver import Driver
     # goal: Final position it's trying to reach tuple(x,y)
     # distance: Distance to the final position from the current position
     # isFinished: boolean of whether the robot position == goal
-class Robot:
+class robot:
     """
     Represents an individual robot.
 
@@ -20,28 +17,83 @@ class Robot:
     The distance is the euclidean distance between the robot position and goal
     isFinished is set as True when position = goal
     """
-    def __init__(self, roboType, position, goal, distance, isFinished):
-
+    def __init__(self, name, robotype, position, goal, distance, isFinished, grid_dim):
         # When Robot type is created, generate the roboType
-        self.roboType = random.randrange(0,2)
-        if self.roboType == 0:
-            self.roboType = Drone
-        if self.roboType == 1:
-            self.roboType = Humanoid
-        if self.roboType == 2:
-            self.roboType = Driver
+        # GENERATE ROBOT FUNCTION
+        self.name = name
+        self.position = position
+        self.robotype = robotype
+        self.goal = goal
+        self.distance = distance
+        self.isFinished = isFinished
+        self.grid_dim = grid_dim
+
+        self.position = self.startPosition(grid_dim)
+        self.goal = self.setGoal(grid_dim)
         
-        self.position = self.startPosition()
-        self.goal = self.setGoal()
         self.distance = np.sqrt((self.goal[0]-self.position[0])**2 + (self.goal[1]-self.position[1])**2)
 
-        if self.position[0] == self.goal[0] and self.position[1] == self.goal[1]:
-            self.isFinished == True
-        else:
-            self.isFinished == False
+    @staticmethod
+    def make_Robot(name, grid_dim):
+        from Drone import drone
+        from Humanoid import humanoid
+        from Driver import driver
 
-    def startPosition(self, length_grid_x, length_grid_y):
-        rand_x = random.randrange(0, length_grid_x)
-        rand_y = random.randrange(0, length_grid_y)
-        self.position = (rand_x, rand_y)
+        robot_classes = (drone, humanoid, driver)
+        robot_class = random.choice(robot_classes)
+        distance = 0.0
 
+        return robot_class(name, None, None, distance, False, True, grid_dim)
+
+
+    def startPosition(self, n: int):
+        """
+        Generate positions at random based on the size of the grid being used
+
+        Inputs:
+            n(int): length of the grid dimension.  Grid must be n x n
+        """
+        rand_x = random.randrange(0, n)
+        rand_y = random.randrange(0, n)
+        return (rand_x, rand_y)
+
+    def setGoal(self, n: int):
+        """
+        Generate positions at random based on the size of the grid being used
+
+        Inputs:
+            n(int): length of the grid dimension.  Grid must be n x n
+        """
+        rand_x = random.randrange(0, n)
+        rand_y = random.randrange(0, n)
+        goal = (rand_x, rand_y)
+        if goal == self.position:
+            return self.setGoal(n)
+        
+        return goal
+
+    @staticmethod
+    def safetyCheck(self, other_robot):
+        from Drone import drone
+        from Humanoid import humanoid
+        from Driver import driver
+        if self.robotype == "drone":
+            self.isDroneSafe(other_robot)
+            return self.isSafe
+        if self.robotype == "driver" or self.robotype == "humanoid":
+            
+
+
+
+def main():
+    """Used for testing Robot class"""
+    robo_1 = robot.make_Robot("Robot_1", 5)
+    print(type(robo_1))
+    print(robo_1.name)
+    print(robo_1.position)
+    print(robo_1.goal)
+
+    
+
+if __name__ == "__main__":
+    main()
