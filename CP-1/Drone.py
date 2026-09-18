@@ -1,9 +1,5 @@
 from Robot import robot
 
-# Drone subclass
-    # onDrone: boolean of whether the drone is in the same position as another
-        # result of method iterating through all other Drone positions that are not 'isFinished'
-
 class drone(robot):
     def __init__(self, name: str, position: tuple, goal: tuple, distance: float, isFinished: bool, isSafe: bool, grid_dim: int):
         super().__init__(name, "drone", position, goal, distance, isFinished, grid_dim)

@@ -75,5 +75,3 @@ def A_star(grid_dim: int, start: tuple, goal: tuple):
     return path
 
 
-
-A_star(10,(0,0),(4,4))
