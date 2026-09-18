@@ -43,7 +43,7 @@ def A_star(grid_dim: int, start: tuple, goal: tuple):
         visited.add(position) # add position to visited set to avoid re-checking positions
         if position == goal: # if the position being checked is the goal, then we have the shortest path.  break while loop
             break
-        for (cost, u) in getNeighbors(grid_dim: int, position: tuple): # iterate over neighbors of the position: top, right, left, bottom
+        for (cost, u) in getNeighbors(grid_dim, position): # iterate over neighbors of the position: top, right, left, bottom
             # for example (0, start) = (0, (0,0)). neighbors = [((1, (0,1)), (1,(1,0))]
             newcost = distances[position] + cost # distances[start] = 0 + 1 = 1
             if newcost < distances[u]: # to start, if 1 < distances[(0,1)] (which is init with inf), add the new cost to the dict as well as the positions
@@ -71,5 +71,7 @@ def A_star(grid_dim: int, start: tuple, goal: tuple):
     #     plt.plot(p[1], p[0], 'r.')
     # plt.ioff()
     # plt.show()
-
+    #print(path)
     return path
+
+

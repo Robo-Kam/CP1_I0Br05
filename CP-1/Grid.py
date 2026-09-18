@@ -1,5 +1,4 @@
 from Robot import robot
-import A_Star_basic
 
 
 class Grid:
@@ -15,7 +14,8 @@ class Grid:
         self.columns = grid_dim
         self.positions = {} # this will store the positions of each robot where they currently are on the grid.  Updated by add_robot()
         self.timestamps = {} # this will hold self.positions for the i-th timestamp.  The timestamp will come from _main_ for each iteration
-        self.robots = []
+        self.robots = [] # stores the generated list of robots
+        self.path = {} # stores the paths for each of the robots
 
         num_robots = grid_dim * 2
 
@@ -25,8 +25,7 @@ class Grid:
 
         # initialize positions dictionary
         for i in range(num_robots):
-            self.positions[i] = self.robots[i].position
-        
+            self.positions[i] = self.robots[i].position       
 
         self.timestamps[0] = self.positions # add the current positions to the first timestamp
 
@@ -74,7 +73,11 @@ def main():
 
     # print different components of the robots in the grid
     for robot in grid_1.robots:
-        print(f'Name: {robot.name}, Type: {robot.robotype}, Position: {robot.position}, Goal: {robot.goal}, Distance:{robot.distance}, Finished: {robot.isFinished}')
+        #print(f'Name: {robot.name}, Type: {robot.robotype}, Position: {robot.position}, Goal: {robot.goal}, Distance:{robot.distance}, Finished: {robot.isFinished}')
+        print(f'Name:{robot.name}')
+        print(f'Path:{robot.path}')
+
+
 
 
 
