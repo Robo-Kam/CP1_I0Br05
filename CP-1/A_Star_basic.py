@@ -16,7 +16,7 @@ def getNeighbors(grid_dim: int, position: tuple):
         cand = (position[0] + delta[0], position[1] + delta[1]) # row and column of the candidate neighbor
         # check if the candidate cell is within the bounds of the map, is not obstructed, and has not already been added to the list of neighbors
         # it's not obstructed if the value of the cell in the map is less than 0.3 (i.e., it is a movable cell)
-        if cand[0] >= 0 and cand[0] < grid_dim - 1 and cand[1] >= 0 and cand[1] < grid_dim - 1:
+        if cand[0] >= 0 and cand[0] < grid_dim and cand[1] >= 0 and cand[1] < grid_dim:
             cost = np.sqrt(delta[0]**2 + delta[1]**2) # distance from the position to the position + delta
             neighbors.append((cost, cand))
 
