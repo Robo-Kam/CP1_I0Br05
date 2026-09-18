@@ -3,10 +3,10 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Polygon, Rectangle
 
-from Driver import Driver
-from Drone import Drone
-from Humanoid import Humanoid
-from Robot import Robot
+from Driver import driver
+from Drone import drone
+from Humanoid import humanoid
+from Robot import robot
 
 n=10
 
@@ -90,7 +90,7 @@ def create_grid(n):
     """Create Robots, add them to a Grid, and generate all timestamps."""
     robots = []
     for i in range(n):
-        robot = Robot()
+        robot = robot()
         robots.append(robot)
         print(
             f"Robot {i + 1}: Type={robot.roboType.__name__}, "

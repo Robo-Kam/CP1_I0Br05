@@ -81,6 +81,7 @@ class robot:
             self.isDroneSafe(other_robot)
             return self.isSafe
         if self.robotype == "driver" or self.robotype == "humanoid":
+            pass
             
 
 
