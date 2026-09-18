@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import A_Star_basic as AS
 
 # Robot class
     # roboType Drone subclass, Humanoid subclass, Driver subclass
@@ -32,6 +33,8 @@ class robot:
         self.goal = self.setGoal(grid_dim)
         
         self.distance = np.sqrt((self.goal[0]-self.position[0])**2 + (self.goal[1]-self.position[1])**2)
+
+        self.path = AS.A_star(grid_dim, self.position, self.goal)
 
     @staticmethod
     def make_Robot(name, grid_dim):
@@ -78,13 +81,22 @@ class robot:
         from Humanoid import humanoid
         from Driver import driver
         if self.robotype == "drone":
-            self.isDroneSafe(other_robot)
+            drone.self.isDroneSafe(other_robot)
             return self.isSafe
         if self.robotype == "driver" or self.robotype == "humanoid":
+<<<<<<< HEAD
             pass
             
 
 
+=======
+            driver.self.isDriverSafe(other_robot)
+            return self.isSafe
+        if self.robotype == "humanoid" or self.robotype == "driver":
+            humanoid.self.isHumanoidSafe(other_robot)
+            return self.isSafe
+        
+>>>>>>> d443a897662d674aadccbd173712ac39ddab9797
 
 def main():
     """Used for testing Robot class"""
@@ -93,7 +105,6 @@ def main():
     print(robo_1.name)
     print(robo_1.position)
     print(robo_1.goal)
-
     
 
 if __name__ == "__main__":
