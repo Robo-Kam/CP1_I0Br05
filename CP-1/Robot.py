@@ -84,19 +84,16 @@ class robot:
             drone.self.isDroneSafe(other_robot)
             return self.isSafe
         if self.robotype == "driver" or self.robotype == "humanoid":
-<<<<<<< HEAD
             pass
             
 
 
-=======
             driver.self.isDriverSafe(other_robot)
             return self.isSafe
         if self.robotype == "humanoid" or self.robotype == "driver":
             humanoid.self.isHumanoidSafe(other_robot)
             return self.isSafe
         
->>>>>>> d443a897662d674aadccbd173712ac39ddab9797
 
 def main():
     """Used for testing Robot class"""
