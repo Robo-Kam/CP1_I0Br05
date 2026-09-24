@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Polygon, Rectangle
 import numpy as np
 from Robot import robot
-
+import random
 #placeholder value for grid/robot inputs
 n=5
 class Grid:
@@ -134,7 +134,8 @@ def draw_grid(axis, grid_size):
         axis.plot([coordinate, coordinate], [0, grid_size], color="lightgray", linewidth=0.8)
 
 
-def create_grid(grid_size=n, robot_count=n*2):
+def create_grid(grid_size=5, robot_count=5*2):
+    """Creates robots to add to grid. 5 is the automatic input if there is no arg"""
     grid = Grid(grid_size)
     for index in range(robot_count):
         new_robot = robot.make_Robot(f"Robot {index + 1}", grid_size)
@@ -287,11 +288,11 @@ def plot_grid(grid):
 
 
 if __name__ == "__main__":
-    # nu=int(input("Set Grid Size, n \n"))
-    # print("\nDrone: Triangle \n" \
-    # "Humanoid: Square \n" \
-    # "Driver: Circle")
-    nu=10
+    nu=int(input("Set Grid Size, n \n"))
+    print("\nDrone: Triangle \n" \
+    "Humanoid: Square \n" \
+    "Driver: Circle")
+    # nu=10
     grid = create_grid(grid_size=nu,robot_count=nu*2)
     ##Debug for printing timestamps
     # for index, snapshot in enumerate(grid.history):
