@@ -1,3 +1,10 @@
+#=============================================================================
+# Attribution: This function is adapted from the starter code provided by
+# Professor Correll for Course 'Robotic Mapping and Trajectory Generation' from CU on Coursera.
+# Date Accessed: August 3, 2026
+# Link to relevant course material: https://www.coursera.org/learn/robotic-path-planning-task-execution/assignment-submission/ECu74/implementing-a-planner
+#=============================================================================
+
 import numpy as np
 from heapq import heapify, heappush, heappop
 from collections import defaultdict
@@ -16,7 +23,7 @@ def getNeighbors(grid_dim: int, position: tuple):
         cand = (position[0] + delta[0], position[1] + delta[1]) # row and column of the candidate neighbor
         # check if the candidate cell is within the bounds of the map, is not obstructed, and has not already been added to the list of neighbors
         # it's not obstructed if the value of the cell in the map is less than 0.3 (i.e., it is a movable cell)
-        if cand[0] >= 0 and cand[0] < grid_dim - 1 and cand[1] >= 0 and cand[1] < grid_dim - 1:
+        if cand[0] >= 0 and cand[0] < grid_dim and cand[1] >= 0 and cand[1] < grid_dim:
             cost = np.sqrt(delta[0]**2 + delta[1]**2) # distance from the position to the position + delta
             neighbors.append((cost, cand))
 
@@ -74,8 +81,4 @@ def A_star(grid_dim: int, start: tuple, goal: tuple):
     #print(path)
     return path
 
-# n=10
-# sp=(np.random(n),np.random(n))
-# gp=(np.random(n),np.random(n))
 
-# #A_star(grid_dim=n,sp,gp)

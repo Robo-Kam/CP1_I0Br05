@@ -186,9 +186,9 @@ def plot_grid(grid):
             row, column = state["position"]
             goal_row, goal_column = state["goal"]
 
-            ##Redoes not plot robot if position=goal
-            # if state["position"] == state["goal"]:
-            #     continue
+            #Redoes not plot robot if position=goal
+            if state["position"] == state["goal"]:
+                continue
             color = colors[index % len(colors)]
             timestamp_axis.plot(
                 [column + 0.5, goal_column + 0.5],
