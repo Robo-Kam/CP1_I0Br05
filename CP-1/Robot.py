@@ -29,15 +29,24 @@ class robot:
         self.isFinished = isFinished
         self.grid_dim = grid_dim
 
-        self.position = self.startPosition(grid_dim)
-        self.goal = self.setGoal(grid_dim)
+        self.position = self.startPosition(grid_dim) # generate random starting position within the grid
+        self.goal = self.setGoal(grid_dim) # generate random goal position within the grid.  Cannot be the same as starting position
         
-        self.distance = np.sqrt((self.goal[0]-self.position[0])**2 + (self.goal[1]-self.position[1])**2)
+        self.distance = np.sqrt((self.goal[0]-self.position[0])**2 + (self.goal[1]-self.position[1])**2) # initial euclidean distance between start and goal
 
-        self.path = AS.A_star(grid_dim, self.position, self.goal)
+        self.path = AS.A_star(grid_dim, self.position, self.goal) # A* path planning algorithm.  Uses euclidean distance heuristic.  Cost is only 1 for each step.
 
     @staticmethod
     def make_Robot(name, grid_dim):
+        """
+        Generates a robot of random type.  Method is static, because it's called in the grid class, 
+        which is where the input is received for the grid dimension.
+        Inputs:
+            name(str): name of the robot
+            grid_dim(int): length of the grid dimension (n).
+        Output:
+            robot_class: a randomly generated robot of type drone, humanoid, or driver
+        """
         from Drone import drone
         from Humanoid import humanoid
         from Driver import driver
@@ -77,6 +86,17 @@ class robot:
 
     @staticmethod
     def safetyCheck(robot_1, robot_2):
+        """
+        This function is used in the conditional check.  This specific one pulls
+        the subclass functions to check if the robot is in the same position as an incompatible robot.
+        The function returns a boolean value to move the conditional_check function to the next step.
+        In the simplest case it just compares two robots and checks if they are compatible.
+        Inputs:
+            robot_1 (drone, humanoid, driver): first robot in comparison
+            robot_2 (drone, humanoid, driver): second robot in comparison
+        Outputs:
+            isSafe (bool): True is they are compatible, False if they are not.
+        """
         from Drone import drone
         from Humanoid import humanoid
         # from Driver import driver
@@ -89,12 +109,15 @@ class robot:
         
 
 def main():
-    """Used for testing Robot class"""
+    """Used for testing Robot class.  Below is an example of how to create a robot."""
     robo_1 = robot.make_Robot("Robot_1", 5)
-    print(type(robo_1))
-    print(robo_1.name)
-    print(robo_1.position)
-    print(robo_1.goal)
+    print(f'NAME: {robo_1.name}')
+    print(f'TYPE: {type(robo_1)}')
+    print(f'POSITION: {robo_1.position}')
+    print(f'GOAL: {robo_1.goal}')
+    print(f'DISTANCE: {robo_1.distance}')
+    print(f'ISFINISHED: {robo_1.isFinished}')
+    print(f'GRID_DIM: {robo_1.grid_dim}')
     
 
 if __name__ == "__main__":
