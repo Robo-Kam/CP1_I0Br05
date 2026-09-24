@@ -2,7 +2,7 @@
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Polygon, Rectangle
-
+import numpy as np
 from Robot import robot
 
 #placeholder value for grid/robot inputs
@@ -41,24 +41,57 @@ class Grid:
         path_index = path.index(position)
         return path[min(path_index + 1, len(path) - 1)]
 
+    
     def run(self):
         """Generate timestamps until every robot reaches its goal."""
         self.history.append(self._snapshot())
         while any(new_robot.position != new_robot.goal for new_robot in self.robots):
+            self.conditions_check()
             for new_robot in self.robots:
                 if new_robot.position != new_robot.goal:
                     new_robot.position = self._next_position(
                         new_robot.position, new_robot.path
                     )
+            self.conditions_check()
             self.history.append(self._snapshot())
-
 
     def timestamp(self, index):
         """Indexes timestamps for robots"""
         return self.history[index]
 
- 
-                
+    # iterate over positions and check for collisions, if collision, then move back to previous position and recalculate path
+    def conditions_check(self):
+        """Check for robot collisions, move one of the robots forward in the path, and leave the other in place if they are not compatible.
+            Inputs:
+                self (Grid): grid object stores the robots list that is used for this function
+            Output:
+                None: The function just modifies the robot positions in the grid object's robots list.
+        """
+        for i in range(len(self.robots)): # first robot for position comparison
+            robot.checkFinished(self.robots[i])
+            if self.robots[i].isFinished: # if robot has reached goal, then skip
+                continue
+            for j in range(i + 1, len(self.robots) - i): # second robot for position comparison
+                robot.checkFinished(self.robots[j])
+                if self.robots[j].isFinished: # if robot has reached goal, then skip
+                    continue
+                print(self.robots[i].name, self.robots[i].position, self.robots[j].name, self.robots[j].position)
+                if self.robots[i].position == self.robots[j].position: # compare the two robot positions.  If they are the same, then check if they are compatible
+                    if not robot.safetyCheck(self.robots[i], self.robots[j]): # if they're not compatible.
+                        # calculate the distance of each robot to their goal.
+                        self.robots[i].distance = np.sqrt((self.robots[i].goal[0]-self.robots[i].position[0])**2 + (self.robots[i].goal[1]-self.robots[i].position[1])**2)
+                        self.robots[j].distance = np.sqrt((self.robots[j].goal[0]-self.robots[j].position[0])**2 + (self.robots[j].goal[1]-self.robots[j].position[1])**2)
+                        if self.robots[i].distance > self.robots[j].distance:
+                            # if first robot is further, then it moves.  The second robot stays in place
+                            self.robots[j].position = self.history[-1][j]["position"]
+                        elif self.robots[i].distance < self.robots[j].distance:
+                            # if the second robot is further, then it moves.  The first robot stays in place
+                            self.robots[i].position = self.history[-1][i]["position"]
+                        else:
+                            # if they are the exact same distance, then randomly choose the one to move and the one to stay in place.
+                            choices = [i, j]
+                            rand_robot = random.choice(choices)
+                            self.robots[rand_robot].position = self.history[-1][rand_robot]["position"]            
 
 
 def draw_shape(axis, row, column, robot_type, grid_size, color, filled=True):
