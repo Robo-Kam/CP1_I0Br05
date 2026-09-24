@@ -76,19 +76,16 @@ class robot:
         return goal
 
     @staticmethod
-    def safetyCheck(self, other_robot):
+    def safetyCheck(robot_1, robot_2):
         from Drone import drone
         from Humanoid import humanoid
-        from Driver import driver
-        if self.robotype == "drone":
-            drone.self.isDroneSafe(other_robot)
-            return self.isSafe
-        if self.robotype == "driver" or self.robotype == "humanoid":
-            driver.self.isDriverSafe(other_robot)
-            return self.isSafe
-        if self.robotype == "humanoid" or self.robotype == "driver":
-            humanoid.self.isHumanoidSafe(other_robot)
-            return self.isSafe
+        # from Driver import driver
+        if robot_1.robotype == "drone":
+            drone.isDroneSafe(robot_1, robot_2)
+            return robot_1.isSafe
+        if robot_1.robotype == "humanoid" or robot_1.robotype == "driver":
+            humanoid.isHumanoidSafe(robot_1, robot_2)
+            return robot_1.isSafe
         
 
 def main():

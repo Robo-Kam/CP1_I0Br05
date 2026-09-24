@@ -1,46 +1,270 @@
+"""Plot robot movement and one synchronized planning grid per robot."""
+
+import matplotlib.pyplot as plt
+from matplotlib.patches import Circle, Polygon, Rectangle
+
 from Robot import robot
 
-
+#placeholder value for grid/robot inputs
+n=5
 class Grid:
-    """Store objects by position and render them as a text grid."""
+    """Store robot positions at each simulation timestamp."""
 
-    def __init__(self, grid_dim: int):
-        """
-        Rows and columns need to be greater than 2 and less than 11.
-        grid_dim is the dimension of the grid.  Only taken in once as the grid must be a square
-        """
+    def __init__(self, grid_size):
+        self.rows = grid_size
+        self.columns = grid_size
+        self.robots = []
+        self.history = []
 
-        self.rows = grid_dim
-        self.columns = grid_dim
-        self.positions = {} # this will store the positions of each robot where they currently are on the grid.  Updated by add_robot()
-        self.timestamps = {} # this will hold self.positions for the i-th timestamp.  The timestamp will come from _main_ for each iteration
-        self.robots = [] # stores the generated list of robots
-        self.path = {} # stores the paths for each of the robots
+    def add_robot(self, new_robot):
+        self.robots.append(new_robot)
 
-        num_robots = grid_dim * 2
+    def _snapshot(self):
+        """Base Function for creating inputs for robot plotting"""
+        return [
+            {
+                "name": new_robot.name,
+                "type": type(new_robot).__name__,
+                "position": tuple(new_robot.position),
+                "goal": tuple(new_robot.goal),
+            }
+            for new_robot in self.robots
+        ]
 
-        # initialize list of robots
-        for i in range(num_robots):
-            self.robots.append(robot.make_Robot(f'robot_{i}', grid_dim))# make grid_dim * 2 number of robots and name them robot_1, robot_2, robot_3, ...
+    # I think this is where we'll put the safety
+    @staticmethod
+    def _next_position(position, path):
+        """Return the next waypoint from the robot's A* path."""
+        if not path:
+            return position
+        if position not in path:
+            return path[0]
+        path_index = path.index(position)
+        return path[min(path_index + 1, len(path) - 1)]
 
-        # initialize positions dictionary
-        for i in range(num_robots):
-            self.positions[i] = self.robots[i].position       
+    def run(self):
+        """Generate timestamps until every robot reaches its goal."""
+        self.history.append(self._snapshot())
+        while any(new_robot.position != new_robot.goal for new_robot in self.robots):
+            for new_robot in self.robots:
+                if new_robot.position != new_robot.goal:
+                    new_robot.position = self._next_position(
+                        new_robot.position, new_robot.path
+                    )
+            self.conditions_check()
+            self.history.append(self._snapshot())
 
-        self.timestamps[0] = self.positions # add the start positions to the first timestamp
+    def timestamp(self, index):
+        """Indexes timestamps for robots"""
+        return self.history[index]
+
+    # iterate over positions and check for collisions, if collision, then move back to previous position and recalculate path
+    def conditions_check(self):
+        if len(self.history) - 1 == 0:
+            return
+        for i in range(len(self.robots)):
+            if self.robots[i].position == self.robots[i].goal:
+                continue
+            for j in range(i + 1, len(self.robots) - i):
+                if self.robots[j].position == self.robots[j].goal:
+                    continue
+                print(self.robots[i].name, self.robots[i].position, self.robots[j].name, self.robots[j].position)
+                if self.robots[i].position == self.robots[j].position:
+                    if not robot.safetyCheck(self.robots[i], self.robots[j]):
+                        self.robots[j].position = self.history[-1][j]["position"]
+                        
+                
 
 
-# used for testing
-def main():
-    """Used for testing Grid class"""
-    # create a grid.  This generates all of the required robots with their start positions, goal and pathing.
-    grid_1= Grid(5)
+def draw_shape(axis, row, column, robot_type, grid_size, color, filled=True):
+    """Draw a robot marker, optionally hollow for its goal position."""
+    center_x = column + 0.5
+    center_y = grid_size - row - 0.5
+    face_color = color if filled else "none"
+    if robot_type == "driver":
+        axis.add_patch(
+            Circle((center_x, center_y), 0.15, facecolor=face_color, edgecolor=color)
+        )
+    elif robot_type == "humanoid":
+        axis.add_patch(
+            Rectangle(
+                (center_x - 0.15, center_y - 0.15),
+                0.3,
+                0.3,
+                facecolor=face_color,
+                edgecolor=color,
+            )
+        )
+    elif robot_type == "drone":
+        axis.add_patch(
+            Polygon(
+                [
+                    (center_x, center_y + 0.15),
+                    (center_x - 0.15, center_y - 0.15),
+                    (center_x + 0.15, center_y - 0.15),
+                ],
+                facecolor=face_color,
+                edgecolor=color,
+            )
+        )
 
-    # print different components of the robots in the grid
-    for robot in grid_1.robots:
-        print(f'Name: {robot.name}, Type: {robot.robotype}, Position: {robot.position}, Goal: {robot.goal}, Distance:{robot.distance}, Finished: {robot.isFinished}')
-        print(f'Path:{robot.path}')
 
-# run main for testing
+def draw_grid(axis, grid_size):
+    """"""
+    for coordinate in range(grid_size + 1):
+        axis.plot([0, grid_size], [coordinate, coordinate], color="lightgray", linewidth=0.8)
+        axis.plot([coordinate, coordinate], [0, grid_size], color="lightgray", linewidth=0.8)
+
+
+def create_grid(grid_size=n, robot_count=n*2):
+    grid = Grid(grid_size)
+    for index in range(robot_count):
+        new_robot = robot.make_Robot(f"Robot {index + 1}", grid_size)
+        grid.add_robot(new_robot)
+    grid.run()
+    return grid
+
+
+def plot_grid(grid):
+    """Function set for displaying a robot number planning plot and a timestamp plot for all robots.
+    """
+    if not grid.robots:
+        raise ValueError("The grid must contain at least one robot")
+
+    colors = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple"]
+    figure, axis = plt.subplots(figsize=(6, 6))
+    timestamp_figure, timestamp_axis = plt.subplots(figsize=(6, 6))
+    robot_num = 0
+    current_timestamp = 0
+
+    def planned_path(new_robot):
+        """Pulls A* Method Data for Robots"""
+        path = list(new_robot.path or [])
+        
+        return path
+
+    def draw_robot_grid():
+        """Path Planning Graph for n*2 number of Robots"""
+        new_robot = grid.robots[robot_num]
+        axis.clear()
+        draw_grid(axis, grid.columns)
+        #start_position = grid.history[0][robot_num]["position"]
+        path = planned_path(new_robot)
+        color = colors[robot_num % len(colors)]
+        axis.plot(
+            [column + 0.5 for row, column in path],
+            [grid.rows - row - 0.5 for row, column in path],
+            color=color,
+            linewidth=3,
+        )
+        start_row, start_column = path[0]
+        goal_row, goal_column = path[-1]
+        draw_shape(
+            axis,
+            start_row,
+            start_column,
+            type(new_robot).__name__,
+            grid.rows,
+            color,
+        )
+        draw_shape(
+            axis,
+            goal_row,
+            goal_column,
+            type(new_robot).__name__,
+            grid.rows,
+            color,
+            filled=False,
+        )
+        axis.set_xlim(0, grid.columns)
+        axis.set_ylim(0, grid.rows)
+        axis.set_aspect("equal")
+        axis.set_title(f" {new_robot.name} Type: {new_robot.robotype}")
+        axis.set_xlabel(f"Path to goal {new_robot.goal}")
+        #figure.suptitle(f"Planning path, robot_num = {robot_num + 1}")
+        figure.tight_layout()
+        figure.canvas.draw_idle()
+
+    def draw_timestamp():
+        """Plot for drawing robots to goal with euclidian distance as the line between"""
+        timestamp_axis.clear()
+        draw_grid(timestamp_axis, grid.columns)
+        for index, state in enumerate(grid.timestamp(current_timestamp)):
+            row, column = state["position"]
+            goal_row, goal_column = state["goal"]
+            if state["position"] == state["goal"]:
+                continue
+            color = colors[index % len(colors)]
+            timestamp_axis.plot(
+                [column + 0.5, goal_column + 0.5],
+                [grid.rows - row - 0.5, grid.rows - goal_row - 0.5],
+                color="gray",
+                linestyle="--",
+                linewidth=1.5,
+            )
+            draw_shape(
+                timestamp_axis,
+                row,
+                column,
+                state["type"],
+                grid.rows,
+                color,
+            )
+            draw_shape(
+                timestamp_axis,
+                goal_row,
+                goal_column,
+                state["type"],
+                grid.rows,
+                color,
+                filled=False,
+            )
+        timestamp_axis.set_xlim(0, grid.columns)
+        timestamp_axis.set_ylim(0, grid.rows)
+        timestamp_axis.set_aspect("equal")
+        #timestamp_axis.legend(loc='upper right', )
+        timestamp_axis.set_title(
+            f"Robot timestamps: {current_timestamp + 1} of {len(grid.history)}"
+        )
+
+        timestamp_figure.tight_layout()
+        timestamp_figure.canvas.draw_idle()
+
+    def update(event):
+        """Method for controlling the updated timestamps with keyboard inputs"""
+        nonlocal current_timestamp, robot_num
+        if event.canvas == timestamp_figure.canvas:
+            if event.key in ("right", " ", "pagedown"):
+                current_timestamp = min(current_timestamp + 1, len(grid.history) - 1)
+            elif event.key in ("left", "pageup"):
+                current_timestamp = max(current_timestamp - 1, 0)
+            else:
+                return
+            draw_timestamp()
+        else:
+            if event.key in ("right", " ", "pagedown"):
+                robot_num = min(robot_num + 1, len(grid.robots) - 1)
+            elif event.key in ("left", "pageup"):
+                robot_num = max(robot_num - 1, 0)
+            else:
+                return
+            draw_robot_grid()
+
+    draw_robot_grid()
+    draw_timestamp()
+    figure.canvas.mpl_connect("key_press_event", update)
+    timestamp_figure.canvas.mpl_connect("key_press_event", update)
+    plt.show()
+
+
 if __name__ == "__main__":
-    main()
+    nu=int(input("Set Grid Size, n \n"))
+    print("\nDrone: Triangle \n" \
+    "Humanoid: Square \n" \
+    "Driver: Circle")
+
+    grid = create_grid(grid_size=nu,robot_count=nu*2)
+    # #Debug for printing timestamps
+    # for index, snapshot in enumerate(grid.history):
+    #     print(f"Timestamp {index}: {snapshot}")
+    plot_grid(grid)
