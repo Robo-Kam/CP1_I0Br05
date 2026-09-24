@@ -1,3 +1,10 @@
+#=============================================================================
+# Attribution: This function is adapted from the starter code provided by
+# Professor Correll for Course 'Robotic Mapping and Trajectory Generation' from CU on Coursera.
+# Date Accessed: August 3, 2026
+# Link to relevant course material: https://www.coursera.org/learn/robotic-path-planning-task-execution/assignment-submission/ECu74/implementing-a-planner
+#=============================================================================
+
 import numpy as np
 from heapq import heapify, heappush, heappop
 from collections import defaultdict
