@@ -74,4 +74,8 @@ def A_star(grid_dim: int, start: tuple, goal: tuple):
     #print(path)
     return path
 
+# n=10
+# sp=(np.random(n),np.random(n))
+# gp=(np.random(n),np.random(n))
 
+# #A_star(grid_dim=n,sp,gp)
