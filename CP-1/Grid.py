@@ -33,7 +33,6 @@ class Grid:
             for new_robot in self.robots
         ]
 
-    # I think this is where we'll put the safety
     @staticmethod
     def _next_position(position, path):
         """Return the next waypoint from the robot's A* path."""
@@ -48,6 +47,7 @@ class Grid:
         """Generate timestamps until every robot reaches its goal."""
         self.history.append(self._snapshot())
         while any(new_robot.position != new_robot.goal for new_robot in self.robots):
+            self.conditions_check()
             for new_robot in self.robots:
                 if new_robot.position != new_robot.goal:
                     new_robot.position = self._next_position(
@@ -68,14 +68,15 @@ class Grid:
             Output:
                 None: The function just modifies the robot positions in the grid object's robots list.
         """
-        if len(self.history) - 1 == 0: # skip the first timestep. Robots can start in the same position even if not compatible.
-            return
         for i in range(len(self.robots)): # first robot for position comparison
+            robot.checkFinished(self.robots[i])
             if self.robots[i].isFinished: # if robot has reached goal, then skip
                 continue
             for j in range(i + 1, len(self.robots) - i): # second robot for position comparison
+                robot.checkFinished(self.robots[j])
                 if self.robots[j].isFinished: # if robot has reached goal, then skip
                     continue
+                print(self.robots[i].name, self.robots[i].position, self.robots[j].name, self.robots[j].position)
                 if self.robots[i].position == self.robots[j].position: # compare the two robot positions.  If they are the same, then check if they are compatible
                     if not robot.safetyCheck(self.robots[i], self.robots[j]): # if they're not compatible.
                         # calculate the distance of each robot to their goal.

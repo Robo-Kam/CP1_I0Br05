@@ -13,9 +13,8 @@ class drone(robot):
             
     def isDroneSafe(self, other_robot: robot):
         if type(other_robot) == drone: # checks if the robot is a Drone
-            if self.position == other_robot.position:
-                # if the Drone is on another drone after moving, then it's not safe
-                self.isSafe = False
-            else:
-                self.isSafe = True
+            # if the Drone is on another drone after moving, then it's not safe
+            self.isSafe = False
+        else:
+            self.isSafe = True
         return self.isSafe

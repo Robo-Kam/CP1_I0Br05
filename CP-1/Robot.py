@@ -84,6 +84,15 @@ class robot:
         
         return goal
 
+    def checkFinished(self):
+        """
+        Check if the robot has reached its goal. If it has, then change isFinished to True.
+        """
+        if self.position == self.goal:
+            self.isFinished = True
+        else:
+            self.isFinished = False
+
     @staticmethod
     def safetyCheck(robot_1, robot_2):
         """
@@ -99,17 +108,20 @@ class robot:
         """
         from Drone import drone
         from Humanoid import humanoid
-        # from Driver import driver
-        if robot_1.robotype == "drone":
+        from Driver import driver
+        if type(robot_1) == drone:
             drone.isDroneSafe(robot_1, robot_2)
             return robot_1.isSafe
-        if robot_1.robotype == "humanoid" or robot_1.robotype == "driver":
+        elif type(robot_1) == driver:
+            driver.isDriverSafe(robot_1, robot_2)
+            return robot_1.isSafe
+        else:
             humanoid.isHumanoidSafe(robot_1, robot_2)
             return robot_1.isSafe
         
 
 def main():
-    """Used for testing Robot class.  Below is an example of how to create a robot."""
+    """Used for testing Robot class.  Below is an example of how to create a robot"""
     robo_1 = robot.make_Robot("Robot_1", 5)
     print(f'NAME: {robo_1.name}')
     print(f'TYPE: {type(robo_1)}')

@@ -12,11 +12,9 @@ class humanoid(robot):
 
     def isHumanoidSafe(self, other_robot: robot):
         from Driver import driver
-
         if type(other_robot) == driver or type(other_robot) == humanoid: # checks if the robot is a Driver or humanoid
-            if self.position == other_robot.position:
-                # if the Driver is on the same spot as another driver or humanoid
-                self.isSafe = False
-            else:
-                self.isSafe = True
+            # if the Driver is on the same spot as another driver or humanoid
+            self.isSafe = False
+        else:
+            self.isSafe = True
         return self.isSafe
