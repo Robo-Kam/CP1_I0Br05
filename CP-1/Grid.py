@@ -5,6 +5,7 @@ from matplotlib.patches import Circle, Polygon, Rectangle
 
 from Robot import robot
 import random
+import numpy as np
 
 #placeholder value for grid/robot inputs
 n=5
@@ -71,12 +72,15 @@ class Grid:
                     continue
                 if self.robots[i].position == self.robots[j].position:
                     if not robot.safetyCheck(self.robots[i], self.robots[j]):
+                        self.robots[i].distance = np.sqrt((self.robots[i].goal[0]-self.robots[i].position[0])**2 + (self.robots[i].goal[1]-self.robots[i].position[1])**2)
+                        self.robots[j].distance = np.sqrt((self.robots[j].goal[0]-self.robots[j].position[0])**2 + (self.robots[j].goal[1]-self.robots[j].position[1])**2)
                         if self.robots[i].distance > self.robots[j].distance:
                             self.robots[j].position = self.history[-1][j]["position"]
                         elif self.robots[i].distance < self.robots[j].distance:
                             self.robots[i].position = self.history[-1][i]["position"]
                         else:
-                            rand_robot = random.choice(i, j)
+                            choices = [i, j]
+                            rand_robot = random.choice(choices)
                             self.robots[rand_robot].position = self.history[-1][rand_robot]["position"]
                         
                 
