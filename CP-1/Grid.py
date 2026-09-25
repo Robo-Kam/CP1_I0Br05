@@ -271,7 +271,7 @@ def plot_grid(grid):
         if event.canvas == timestamp_figure.canvas:
             if event.key in ("right", " ", "pagedown"):
                 current_timestamp = min(current_timestamp + 1, len(grid.history) - 1)
-            if event.key in ("left", "pageup"):
+            elif event.key in ("left", "pageup"):
                 current_timestamp = max(current_timestamp - 1, 0)
             else:
                 return
