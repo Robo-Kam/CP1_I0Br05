@@ -60,7 +60,6 @@ class Grid:
         """Indexes timestamps for robots"""
         return self.history[index]
 
-    # iterate over positions and check for collisions, if collision, then move back to previous position and recalculate path
     def conditions_check(self):
         """Check for robot collisions, move one of the robots forward in the path, and leave the other in place if they are not compatible.
             Inputs:
